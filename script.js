@@ -48,7 +48,7 @@ function createcell(goodcell) //각각의 셀에다가 input 태그를 이용해
     const cellEl=document.createElement("input");// createElement는 만들고 싶은 요소의
     // Tag 이름을 붙여줘야한다.
     cellEl.ClassName="goodcell";
-    cellEl.id="goodcell_"+goodcell.row+goodcell.column; // 클래스의 이름을 이용해서 붙임id
+    cellEl.id="goodcell_"+goodcell.row+" "+goodcell.column; // 클래스의 이름을 이용해서 붙임id
     cellEl.value=goodcell.data;
     cellEl.disabled=goodcell.disabled; // Cell 클래스의 각각 요소의 값을 
     // dynamic 하게 만들어주기 위함.
@@ -60,12 +60,18 @@ function drawSheet()// 실제로 createSell 이후 cell을 화면에 보일수 �
 //해주는 부분임.
 {
     for(let i=0;i<spreadsheet.length;i++)
-    {
+    {   const rowContainerEl=document.createElement("div"); // 지금 난잡하게 열거 되어있는
+    // cell 아이템을 정리하기 위해서 0-0 0=1 0=2 0=3 등등 이런 요소를 하나의 div로 나누어 줄거임
+        rowContainerEl.className="cell-row"; // class 이름 지정 해주기 
+        // 요소를 이제 추가해야하니까
         for(let j=0;j<spreadsheet[i].length;j++) // 지금 i가 행이고 , j가 열임.
         {
             const cell=spreadsheet[i][j] // 0 1 02 03 04 05 06 이런식으로 증가 하면
-            spreadSheetContainer.append(createcell(cell));
             //querySelector에 등록된 "#spreadsheet-container" 인거임.
+            rowContainerEl.append(createcell(cell));// rowContainer라는 요소에다가 append 해주기
+            
         }
+        spreadSheetContainer.append(rowContainerEl);// 0-0 0-1 0-2가 다돌고
+        // 행의 번호가 바뀌게 되면 그때 새롭게 추가해주면 된다 containerEl 요소를.
     }
 }
