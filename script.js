@@ -2,7 +2,9 @@ const spreadSheetContainer=document.querySelector("#spreadsheet-container"); // 
 const Rows=15;//행의 길이를 정할 요소
 const Columns=15; // 열의 길이를 정할 요소 
 const spreadsheet=[]; //spreadsheet를 위한 배열 생성
-
+const alphabet=[
+    "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
+] // 알파벳 배열을 만들어주기 위해서 만들어줌
 
 
 class Cell{ // class 속성 사용해주기.
@@ -25,7 +27,35 @@ function initSpreadsheet()
     {   let spreadSheetRow=[];
         for(let j=0;j<Columns;j++) // 15x15 만들었음
         {
-            const cell=new Cell(false,false,i+"-"+j,i,j,false); // hard Coding임. 
+            let cellData=''; // 새롭게 데이터 이용해주기 위해서 만듬
+            
+            if(j===0)
+            {
+                cellData=i; // i는 지금 행의 번호기 때문에 0번열에는 i값 1 ,2,3,4,5
+                // 각행에 맞는 값을 넣어줌
+            }
+            //모든 row 첫 번째 컬럼에 숫자 넣기.
+
+            //0행 0열 값 첫번쨰 row의 컬럼은 ""
+            if(cellData<=0)
+            {
+                cellData='';// 그냥 값을 일부로 비워 놓음 
+            }
+
+            if(i===0) // 0-0 0-1 등 각행에 대해서  값을 넣어주기 위함
+            {
+                cellData=alphabet[j-1]; // 뭐 인덱스니까 j번째 까지 돌겠지
+                //근데 이러면 0행 0열 값이 차버리니까 우리가 원하던 값이 아님
+                //오른쪽으로 밀었는데 지금 undefined 나와서 if 문 하나사용
+
+            }
+
+            if(!cellData)
+            {
+                cellData='';// undefined를 안뜨게 하기 위한 값임.
+            }
+
+            const cell=new Cell(false,false,cellData,i,j,false); // hard Coding임. 
             
             spreadSheetRow.push(cell); // 실제 class 값인 cell을 출력해주는 부분임.
         }
