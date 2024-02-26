@@ -20,3 +20,14 @@
     outline:none;
     box-sizing:border-box; 
 }
+
+.header {
+    text-align:center;
+    background:pink;
+}
+.header.active{
+    background-color:aqua;
+}
+
+
+
