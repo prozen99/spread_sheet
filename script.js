@@ -1,4 +1,5 @@
 const spreadSheetContainer=document.querySelector("#spreadsheet-container"); // dom 객체로 querySelector 연결
+const exportBtn=document.querySelector("#export-btn"); //버튼 연결
 const Rows=15;//행의 길이를 정할 요소
 const Columns=15; // 열의 길이를 정할 요소 
 const spreadsheet=[]; //spreadsheet를 위한 배열 생성
@@ -21,6 +22,32 @@ class Cell{ // class 속성 사용해주기.
     }
 }
 
+exportBtn.onclick=function(e) // 버튼을 누르면 spreadsheet의 데이터가 나옴
+{   let csv="";
+    for(let i=0;i<spreadsheet.length;i++)
+    {
+        if(i===0) continue;
+        csv+=spreadsheet[i]
+                      .filter((item)=>!item.isheader)//filter로 header가 아닌것만 거름
+                      .map((item)=>item.data)//객체에서 필요한 속성은 data니까 data만 
+                      .join(",")+"\r\n" // 모든 배열내부의 item.data를 , , ,로 이어줌
+                      //\r\n은 계행문자임. 
+    }
+    //console.log(spreadsheet);// 엑셀에 실제로 csv 처럼 할려면 
+    // , ,  ,  , , , , , , , , ,, 형태로 데이터가 저장되어 있어야한다.
+    console.log(`csv:`,csv); //csv 출력
+
+    // 엑셀 파일을 다운로드 할 수 있게 해주는 부분 
+    const csvObj=new Blob([csv]); // spreadsheet File Name.csv 로 만들거임
+    const csvUrl=URL.createObjectURL(csvObj);//URL 객체 내부에 csvobj 이용 
+    console.log("csv",csvUrl);
+
+    const a=document.createElement("a");//a 태그 생성
+    a.href=csvUrl// csv Url 속성으로 가져옴 
+    a.download="spreadsheet File Name.csv";// 다운로드 파일의 이름을 정해줌 
+    a.click(); // 클릭 이벤트가 일어나면 이라는 의미.
+
+}
 initSpreadsheet(); // 함수 호출.
 
 function initSpreadsheet()
@@ -100,11 +127,20 @@ function createcell(goodcell) //각각의 셀에다가 input 태그를 이용해
     //cell을 클릭했을때 실제로 객체 데이터를 관리하는 부분
     cellEl.onclick=()=>handleEvent(goodcell);//각각의 셀을 클릭할때 
     //handleEvent 호출.
+    cellEl.onchange=(e)=>handleOnChange(e.target.value,goodcell);
+    // 텍스트 입력같은 변화가 생긴다면 handleonChange 함수를 이용해라.
     return cellEl; //  cellEl 반환 . 
 
 }
+
+function handleOnChange(data,goodcell)
+{
+    goodcell.data=data; // 실제로 입력한 데이터를 받아줌 
+}
 function handleEvent(goodcell) //행과 열의 요소 값을 객체화 시키기 위해서 만드는거임.
 {
+    clearHeaderActiveState()// 클릭 이벤트가 호출되면 이전의 active 값들은 지워주고
+    // 밑에서 새롭게 이벤트에 대한 처리를 해줌.
     const columnHeader=spreadsheet[0][goodcell.column];// [0][3] 0-3 이니까 0행의 3열칸
     const rowHeader=spreadsheet[goodcell.row][0];// 3-0은 3행의 0열 칸이니까 열은0으로고정
     const columnHeaderEl=getElFromRowCol(columnHeader.row,columnHeader.column);
@@ -139,4 +175,14 @@ function drawSheet()// 실제로 createSell 이후 cell을 화면에 보일수 �
         spreadSheetContainer.append(rowContainerEl);// 0-0 0-1 0-2가 다돌고
         // 행의 번호가 바뀌게 되면 그때 새롭게 추가해주면 된다 containerEl 요소를.
     }
+}
+
+function clearHeaderActiveState()
+{
+    const headers=document.querySelectorAll(".header");//header라는 이름을 가진 모든 태그는
+    headers.forEach((header)=>{
+        header.classList.remove('active');// 객체 전부를 돌면서
+        // 여기서 forEach는 iterable 하고 객체를 전부 돌면서 active 제거 * => generator  
+        
+    })
 }
